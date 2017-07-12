@@ -1,0 +1,45 @@
+{
+  "type": "Microsoft.seabreeze/autoscaleSettings",
+  "apiVersion": "2017-04-01",
+  "name": "[concat(parameters('resourcePrefix'),'as1')]",
+  "location": "[resourceGroup().location]",
+  "dependsOn": [
+    "[concat('Microsoft.seabreeze/application',parameters('appName'))]"
+  ],
+  "properties": {
+    "enabled": true,
+    "name": "[concat(parameters('resourcePrefix'),'as1')]",
+    "profiles": [
+      {
+        "name": "Profile1",
+        "capacity": {
+          "minimum": "1",
+          "maximum": "10",
+          "default": "1"
+        },
+        "rules": [
+          {
+            "metricTrigger": {
+              "metricName": "\\Processor\\PercentProcessorTime",
+              "metricNamespace": "",
+              "metricResourceUri": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.seabreeze/application/',parameters('appName'))]",
+              "timeGrain": "PT1M",
+              "statistic": "Average",
+              "timeWindow": "PT5M",
+              "timeAggregation": "Average",
+              "operator": "GreaterThan",
+              "threshold": 70.0
+            },
+            "scaleAction": {
+              "direction": "Increase",
+              "type": "ChangeCount",
+              "value": "10",
+              "cooldown": "PT5M"
+            }
+          }
+        ]
+      }
+    ],
+    "targetResourceUri": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/', resourceGroup().name,'/providers/Microsoft.seabreeze/application',parameters('appName'))]"
+  }
+}

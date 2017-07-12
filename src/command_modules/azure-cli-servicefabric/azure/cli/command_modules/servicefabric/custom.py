@@ -82,38 +82,44 @@ def put(client,app_name, compose_file,ext_file=None):
         ret = requests.put(url,data = compose_file, cert=cert,verify=False,headers = headers)
     else:
         ret =  requests.put(url,data = compose_file,verify=False,headers = headers)
-    if is_json(ret.text):
-        return ret.json()
-
-    
-def post(client, app_name,instance=3):
-    headers = {'Content-type': 'application/json'}
-    url = full_uri.format(app_name)
     response = requests.get(url,verify=False)
     while response.json()['properties']['applicationHealthState'].lower() != 'ok':
         import time
-        time.sleep(10)
-        print('applicationHealthState is ' + response.json()['properties']['applicationHealthState'])
+        time.sleep(2)
+        import sys
+        sys.stdout.write('.')
+        sys.stdout.flush()
         response = requests.get(url,verify=False)
+    if is_json(response.text):
+        return response.json()
+
+    
+def post(client, app_name,low=1, high = 3):
+    headers = {'Content-type': 'application/json'}
+    url = full_uri.format(app_name)
+    response = requests.get(url,verify=False)
     endpoint = response.json()['properties']['clusterEndpoint']
     app = response.json()['properties']['deployedApplicationName']
     apps = app.split(":/")
     cluster_endpoint = 'http://' + endpoint + ':19080/'
     get_service_url = cluster_endpoint + 'Applications/{}/$/GetServices?&api-version=3.0'.format(apps[1])
     get_service_respone =  requests.get(get_service_url,verify=False)
-    service = get_service_respone.json()['Items'][0]['Id']
-    if is_secure(url):
-        d = shelve.open(CONFIG_PATH)
-        cert = d['pem']
-        if cert is None:
-            raise Exception('run \'load\' to load cert') 
-        ret = requests.post(url,json = content, cert=cert,verify=False,headers = headers)
-    else:
-        import json  
-        content = json.loads('{"Flags": "1", "ServiceKind": "Stateless", "InstanceCount": 5}')
-        content['InstanceCount'] = instance
-        url = cluster_endpoint + 'Services/{}/$/Update?api-version=3.0'.format(service)
-        ret =  requests.post(url,json = content,verify=False,headers = headers)
+    i = 1
+    while i < 100: 
+        if i % 2 == 1:
+            instance = high
+        else:
+            instance = low
+        for res in get_service_respone.json()['Items']:
+            service = res['Id']
+            import json  
+            content = json.loads('{"Flags": "1", "ServiceKind": "Stateless", "InstanceCount": 5}')
+            content['InstanceCount'] = instance
+            url = cluster_endpoint + 'Services/{}/$/Update?api-version=3.0'.format(service)
+            ret =  requests.post(url,json = content,verify=False,headers = headers)
+        import time
+        time.sleep(6)
+        i = i+1
     if is_json(ret.text):
         return ret.json()
 	

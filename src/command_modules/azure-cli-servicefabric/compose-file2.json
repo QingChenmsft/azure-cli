@@ -1,0 +1,12 @@
+
+{"Properties": { "ApplicationDefinition": "version: '3' 
+services: 
+  frontend: 
+    image: carinamarina/hello-world-app 
+    ports: 
+      - 8080:5000 
+  backend: 
+    image: carinamarina/hello-world-app 
+    ports: 
+      - 8081:5000 
+"}}
