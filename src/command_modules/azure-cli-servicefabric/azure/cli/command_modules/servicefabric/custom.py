@@ -71,7 +71,7 @@ def get(client, app_name):
         print(ret.text)
 
     
-def put(client,app_name, content):
+def put(client,app_name, compose_file,ext_file=None):
     headers = {'Content-type': 'application/json'}	
     url = full_uri.format(app_name)
     if is_secure(url):
@@ -79,13 +79,11 @@ def put(client,app_name, content):
         cert = d['pem']
         if cert is None:
             raise Exception('run \'load\' to load cert') 
-        ret = requests.put(url,data = content, cert=cert,verify=False,headers = headers)
+        ret = requests.put(url,data = compose_file, cert=cert,verify=False,headers = headers)
     else:
-        ret =  requests.put(url,data = content,verify=False,headers = headers)
+        ret =  requests.put(url,data = compose_file,verify=False,headers = headers)
     if is_json(ret.text):
         return ret.json()
-    else:
-        print(ret.text)
 
     
 def post(client, app_name):
@@ -112,7 +110,7 @@ def post(client, app_name):
         ret = requests.post(url,json = content, cert=cert,verify=False,headers = headers)
     else:
         import json  
-        content = json.loads('{"Flags": "1", "ServiceKind": "Stateless", "InstanceCount": 10}')
+        content = json.loads('{"Flags": "1", "ServiceKind": "Stateless", "InstanceCount": 5}')
         url = cluster_endpoint + 'Services/{}/$/Update?api-version=3.0'.format(service)
         ret =  requests.post(url,json = content,verify=False,headers = headers)
     if is_json(ret.text):
