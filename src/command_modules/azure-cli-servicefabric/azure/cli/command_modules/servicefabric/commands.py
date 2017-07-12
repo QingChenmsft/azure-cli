@@ -20,10 +20,10 @@ custom_path = 'azure.cli.command_modules.servicefabric.custom#{}'
 
 # cli_command(__name__, 'sbzrm load', custom_path.format('load'), keyvault_client_vaults_factory)
 
-cli_command(__name__, 'sbzrm application get', custom_path.format('get'), keyvault_client_vaults_factory)
+cli_command(__name__, 'sbz application get', custom_path.format('get'), keyvault_client_vaults_factory)
 
-cli_command(__name__, 'sbzrm application create', custom_path.format('put'), keyvault_client_vaults_factory)
+cli_command(__name__, 'sbz application create', custom_path.format('put'), keyvault_client_vaults_factory)
 
-cli_command(__name__, 'sbzrm application update', custom_path.format('post'), keyvault_client_vaults_factory)
+cli_command(__name__, 'sbz application update', custom_path.format('post'), keyvault_client_vaults_factory)
 
-cli_command(__name__, 'sbzrm application delete', custom_path.format('delete'), keyvault_client_vaults_factory)
+cli_command(__name__, 'sbz application delete', custom_path.format('delete'), keyvault_client_vaults_factory)

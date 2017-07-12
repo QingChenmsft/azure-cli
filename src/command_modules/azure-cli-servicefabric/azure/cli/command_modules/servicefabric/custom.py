@@ -86,7 +86,7 @@ def put(client,app_name, compose_file,ext_file=None):
         return ret.json()
 
     
-def post(client, app_name):
+def post(client, app_name,instance=3):
     headers = {'Content-type': 'application/json'}
     url = full_uri.format(app_name)
     response = requests.get(url,verify=False)
@@ -111,6 +111,7 @@ def post(client, app_name):
     else:
         import json  
         content = json.loads('{"Flags": "1", "ServiceKind": "Stateless", "InstanceCount": 5}')
+        content['InstanceCount'] = instance
         url = cluster_endpoint + 'Services/{}/$/Update?api-version=3.0'.format(service)
         ret =  requests.post(url,json = content,verify=False,headers = headers)
     if is_json(ret.text):
