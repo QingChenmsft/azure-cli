@@ -83,18 +83,22 @@ def put(client,app_name, compose_file,ext_file=None):
     else:
         ret =  requests.put(url,data = compose_file,verify=False,headers = headers)
     response = requests.get(url,verify=False)
+    import sys
     while response.json()['properties']['applicationHealthState'].lower() != 'ok':
         import time
         time.sleep(2)
-        import sys
         sys.stdout.write('.')
         sys.stdout.flush()
         response = requests.get(url,verify=False)
-    if is_json(response.text):
-        return response.json()
+    sys.stdout.write('\n')
+    sys.stdout.flush()
+    response = requests.get(url,verify=False)
+    endpoint = response.json()['properties']['clusterEndpoint']
+    print('Provisioning succeeded!')
+    print('Your app endpoint is: {}:8080'.format(endpoint))
 
     
-def post(client, app_name,low=1, high = 3):
+def post(client, app_name,low=1, high = 5):
     headers = {'Content-type': 'application/json'}
     url = full_uri.format(app_name)
     response = requests.get(url,verify=False)
@@ -118,10 +122,8 @@ def post(client, app_name,low=1, high = 3):
             url = cluster_endpoint + 'Services/{}/$/Update?api-version=3.0'.format(service)
             ret =  requests.post(url,json = content,verify=False,headers = headers)
         import time
-        time.sleep(6)
+        time.sleep(7)
         i = i+1
-    if is_json(ret.text):
-        return ret.json()
 	
 
 def delete(client, app_name):
